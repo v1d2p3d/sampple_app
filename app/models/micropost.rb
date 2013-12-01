@@ -1,9 +1,15 @@
 class Micropost < ActiveRecord::Base
-  attr_accessible :content
+  attr_accessible :content, :photo
   belongs_to :user
+
+  has_attached_file :photo, :styles => { :small => "150x150>" },
+                  :url  => "/assets/microposts/:id/:style/:basename.:extension",
+                  :path => ":rails_root/public/assets/microposts/:id/:style/:basename.:extension"
 
   validates :user_id, presence: true
   validates :content, presence: true, length: { maximum: 140 }
+  validates_attachment_size :photo, :less_than => 5.megabytes
+  validates_attachment_content_type :photo, :content_type => ['image/jpeg', 'image/png']
 
   default_scope order: 'microposts.created_at DESC'
 
